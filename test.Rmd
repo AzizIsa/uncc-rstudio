@@ -1,0 +1,115 @@
+---
+title: "test"
+author: "Aziz Isamedinov"
+date: "February 13, 2019"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Importing Packages
+```{r}
+library(readr)
+library(ggplot2)
+library(corrplot)
+library(mlbench)
+library(reshape2)
+library(caret)
+library(caTools)
+library(sjPlot)
+library(sjmisc)
+library(car)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+#Reading CSV file 
+boston_h=read.csv(file="C:/Users/azizi/Documents/CSVDatasets/Boston_Housing.csv", sep = ",")
+# View top 5 rows of the data
+head(boston_h)
+```
+
+```{r}
+str(boston_h)
+```
+
+```{r}
+summary(boston_h)
+```
+
+```{r}
+which(is.na(boston_h))
+```
+
+```{r}
+qplot(boston_h$MEDV, geom="histogram", fill=I("seagreen"), binwidth=2)
+```
+
+```{r}
+#Generate Boxplots of the AGE
+boxplot(boston_h$AGE,col=c("orange"),main="Boxplot of owner-occupied units built prior to 1940")
+```
+```{r}
+boxplot(boston_h$MEDV,col=c("orange"),main="Median Home Value")
+```
+```{r}
+plot(boston_h$MEDV, boston_h$AGE, type="p", pch=20, col="blue", lty=3)
+```
+
+```{r}
+boston_h$LMEDV = log(boston_h$MEDV)
+bos_train<-boston_h[1:356,]
+bos_test<-boston_h[357:506,]
+
+attach(boston_h)
+fit1<-lm(LMEDV~LSTAT+RM+TAX+AGE+ZN)
+summary(fit1)
+anova(fit1)
+
+```
+
+
+
+
+
+```{r}
+#Do any variables have to be dropped because of multicollinearity?(Use VIF criteria to check for multicollinearity)
+vif(fit1)
+```
+
+```{r}
+#Rerun your regression model after removing variables (if any) based on your analysis in the previous question. What is the value of R2 ? What does it signify? #What is the overall F-statistic and the corresponding p-value of this final model? What does it signify?
+
+fit2= lm(LMEDV~RM+TAX+AGE+ZN)
+summary(fit2)
+```
+
+
+
+
+```{r}
+#Report the MSE obtained on Bostrain. How much does this increase when you score your model (i.e.,predict) on Bostest?
+MSE=mean(fit1$residuals^2)
+MSE
+```
+
+
+```{r}
+#(Bonus 1 point). Use the stepwise regression considering to reach your final model (LMEDV as dependent variable and all but MEDV as independent variables). Try different model section criteria (i.e., AIC, Cp, BIC, adj R^2) and see if you can come up with the same model even with the different criteria. Determine the best model if you get different models with different criteria? We will consider a model that gives the highest accuracy (in terms of MSE) in the test set as the best model.
+```
+
+
+
+
+
+
+
+
+
