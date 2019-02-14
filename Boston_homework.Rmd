@@ -3,9 +3,9 @@ title: "Boston Housing - Homework"
 author: "Aziz Isamedinov"
 date: "February 13, 2019"
 output:
-  html_document: default
-  pdf_document: default
   word_document: default
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -55,11 +55,11 @@ which(is.na(boston_h))
 ```
 #1.b. Plot the distribution of MEDV. What do you observe?
 
-Answer:
+Answer: It can be seen that data is not normally distrubited around the mean of MEDV
 
 ```{r}
 #Plot Histogram
-qplot(boston_h$MEDV, geom="histogram", fill=I("seagreen"), binwidth=2)
+qplot(boston_h$MEDV, geom="histogram", fill=I("seagreen"), binwidth=1)
 ```
 
 1.c. Generate box-plots of the AGE (proportion of owner-occupied units built prior to 1940) and
@@ -76,9 +76,10 @@ boxplot(boston_h$AGE,col=c("orange"),main="Boxplot of owner-occupied units built
 #Generate boxplot from  MEDV data
 boxplot(boston_h$MEDV,col=c("orange"),main="Median Home Value")
 ```
+
 #1.d.Generate a scatterplot of MEDV against AGE; comment on how inclusion of the outliers would affect a predictive model of median home value as a function of AGE.
 
-Answer:
+Answer: IT is affecting definetely not postively as there can be observed more noise in the data. 
 
 ```{r}
 #Generate Scatter for MEDV vs AGE
@@ -94,6 +95,7 @@ bos_train<-boston_h[1:356,]
 bos_test<-boston_h[357:506,]
 
 #Run regression with the given model 
+options(scipen = 100, digits=4)
 fit1<-lm(LMEDV~LSTAT+RM+TAX+AGE+ZN, data=bos_train)
 summary(fit1)
 anova(fit1)
@@ -101,24 +103,27 @@ anova(fit1)
 
 #3. Do any variables have to be dropped because of multicollinearity?(Use VIF criteria to check for multicollinearity)
 
-Answer: 
-
-#4.Report the coefficients obtained by your model. Would you drop any of the variables used in your model (based on the t-scores or p-values)?
-
-Answer:
+Answer: Favorably, all the values of VIF are way below critical point which implies that variables are independent and thus are not multicollinear. 
 
 ```{r}
 # viffunction to check wether multicollinearity exists amoung  variables
 vif(fit1)
 ```
 
-#5.Rerun your regression model after removing variables (if any) based on your analysis in the previous question. What is the value of R2 ? What does it signify? #What is the overall F-statistic and the corresponding p-value of this final model? What does it signify?
+#4.Report the coefficients obtained by your model. Would you drop any of the variables used in your model (based on the t-scores or p-values)?
 
-Answer: 
+Answer: From estimates it is clear that, for every unit increase of LSTAT, TAX, AGE, ZN, the predicted value of MEDV would be around -0.0100329, 0.0005077, 0.0007358, 0.0000304 units lower respectively. However, for every unit increase in RM, the MEDV is predicted to be 3.25 unit higher. Let's test null hypothesis that the parameter is equal to zero. In our case coefficients having p values less than 0.05 or less LSTAT, TAX, AGE, ZN, RM are significant. This means that the slope and the t value are in the region of rejection for the null hypothesis.At the 0.05 level of signi???cance, there is evidence that the relationship between prior mentioned independent variables and MEDV indeed exists. While ZN is statistically insignificant as its p-values is higher than 0.05 therefore it is guilty one. Therefore I would drop ZN.
+
+
+#5.Rerun your regression model after removing variables (if any) based on your analysis in the previous question. What is the value of R2 ? What does it signify? What is the overall F-statistic and the corresponding p-value of this final model? What does it signify?
+
+Answer: f few look at R square for goodness of fit, it shows around 83%. So, overall measure of strength association is relatively strong.This shows that the ???t of the regression line to the points is fairly good. An R square of 0.83 means that 0.83or 83% of the variation in the values of Y can be explained on the basis of the regression line. The explanation is a statistical one, meaning that 83% of the differences in MEDV's rate in the di???erent provinces are explained statistically by di???erences in selected predictors
+
+
 
 #6. What is the overall F-statistic and the corresponding p-value of this final model? What does it signify?
 
-Answer:
+Answer:The important step in a multiple regression analysis is to compute F-statistics and investigate associated p-value. The p-value for F-test is very small, that is smaller than 0.05 and therefore significant. It implies that our group of independent variables reliably predict the dependent variable. In other words, at least one of the predictors is related to the response, then it is natural to wonder which the guilty ones are (for that we looked at T-test above).R
 ```{r}
 #Regression analysis after removing variables
 fit2= lm(LMEDV~LSTAT+RM+TAX+AGE, data=bos_train)
@@ -130,7 +135,7 @@ summary(fit2)
 
 #7. Report the MSE obtained on Bostrain. How much does this increase when you score your model (i.e.,predict) on Bostest?
 
-Answer:
+Answer: As it is indicated below, There is a slight increase in MSE for test data(bos_test) compared to train data(bos_train)
 
 ```{r}
 #Find MSE for the bos train
@@ -145,7 +150,7 @@ MSE_bostest
 
 #(Bonus 1 point). Use the stepwise regression considering to reach your final model (LMEDV as dependent variable and all but MEDV as independent variables). Try different model section criteria (i.e., AIC, Cp, BIC, adj R^2) and see if you can come up with the same model even with the different criteria. Determine the best model if you get different models with different criteria? We will consider a model that gives the highest accuracy (in terms of MSE) in the test set as the best model.
 
-Answer:
+Answer: THe best model is as follows: lm(formula = LMEDV ~ ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT, data = bos_train), however based on the MSE statistics the first model(fit3) is prefered.
 
 ```{r}
 
@@ -163,6 +168,7 @@ fit4_predict = predict(fit4, bos_train)
 mse_fit4 = mean(bos_train$LMEDV-fit4_predict)^2
 
 #Print out all models MSE
+options(scipen = 100, digits=4)
 mse_fit3
 mse_fit4
 ```
