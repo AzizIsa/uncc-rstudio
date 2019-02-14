@@ -94,7 +94,7 @@ bos_train<-boston_h[1:356,]
 bos_test<-boston_h[357:506,]
 
 #Run regression with the given model 
-fit1<-lm(LMEDV~LSTAT+RM+TAX+AGE+ZN, data=boston_h)
+fit1<-lm(LMEDV~LSTAT+RM+TAX+AGE+ZN, data=bos_train)
 summary(fit1)
 anova(fit1)
 ```
@@ -121,7 +121,7 @@ Answer:
 Answer:
 ```{r}
 #Regression analysis after removing variables
-fit2= lm(LMEDV~RM+TAX+AGE+ZN, data=boston_h)
+fit2= lm(LMEDV~LSTAT+RM+TAX+AGE, data=bos_train)
 summary(fit2)
 ```
 
